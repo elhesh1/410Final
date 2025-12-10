@@ -1,6 +1,6 @@
 from model import get_model
 
-def predict_sentiment(text, model):
+def predict_sentiment(text):
     """
     Predict the sentiment of the given text using the provided model.
     """

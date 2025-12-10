@@ -41,10 +41,10 @@ for i, item in enumerate(items):
     )
 
 fig.update_layout(
-    grid = {'rows': len(names)//4, 'columns': 4, 'pattern': "independent"},
+    grid = {'rows': int(len(names)//4)+1, 'columns': 4, 'pattern': "independent"},
     title = {
         'text': "Favorability Scores of Athletes",
-        'x':0.5,
+        'x':0.2,
         'xanchor': 'center'
     }
     )
