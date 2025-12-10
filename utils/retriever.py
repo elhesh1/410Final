@@ -17,7 +17,6 @@ import subprocess
 from tqdm import tqdm
 from typing import List, Any, Optional
 
-import langchain_core
 from langchain_core.retrievers import BaseRetriever
 from langchain_core.documents import Document
 from langchain_core.callbacks import CallbackManagerForRetrieverRun
@@ -44,7 +43,7 @@ class PyseriniBM25Retriever(BaseRetriever):
     """
 
     index_dir: str                     # Path to the Lucene index
-    k: int = 50                         # Number of results to return
+    k: int = 5                         # Number of results to return
     k1: float = 0.9                    # BM25 hyperparameter
     b: float = 0.4                     # BM25 hyperparameter
     _searcher: Any = PrivateAttr(default=None)
@@ -171,7 +170,7 @@ def create_retriever():
     """
     try:
         index_dir = create_index(config.PYSERINI_CNAME)
-        print(f"Index ready at {index_dir}")
+
         # 1. Create the base BM25 retriever
         base_retriever = PyseriniBM25Retriever(
             index_dir=index_dir,
@@ -197,7 +196,3 @@ def create_retriever():
     except Exception as e:
         logger.error(f"Error creating retriever: {e}")
         raise
-
-def get_documents(retriever,query):
-    docs = retriever.base_retriever.invoke(query)
-    return docs
