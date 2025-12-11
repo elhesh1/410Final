@@ -164,6 +164,7 @@ def add():
     return "OK"
 
 
+# Called when adding an athlete
 def add_single(name):
     global scores, counts
     s, c = compute_likeability(name)

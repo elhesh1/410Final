@@ -2,9 +2,9 @@ import requests
 
 
 # This is the scraper that analyzed reddit comments with the keyword (name)
-def get_reddit_comments(name):
-    limit = 150
-    # Public Reddit search API 
+import requests
+
+def get_reddit_comments(name, limit=150):
     url = "https://api.pullpush.io/reddit/search/comment/"
     params = {
         "q": name,
@@ -12,18 +12,15 @@ def get_reddit_comments(name):
         "fields": ["body"],
     }
 
-    try:
-        r = requests.get(url, params=params, timeout=10)
-        data = r.json().get("data", [])
-    except:
-        return []
+    # Trys twice, because sometimes the api times outs
+    for attempt in range(2):
+        try:
+            r = requests.get(url, params=params, timeout=30)
+            data = r.json().get("data", [])
 
-    
-    comments = []
-    # Creates a list of comments (we only do 150 max so its not too slow)
-    for item in data:
-        body = item.get("body", "")
-        if body and name.lower() in body.lower():
-            comments.append(body)
+            print(f"[SCRAPER] Retrieved {len(data)} comments for {name}")
+            return [d.get("body", "") for d in data if d.get("body")]
+        except Exception as e:
+            print(f"[SCRAPER] Attempt {attempt+1} failed:", e)
 
-    return comments[:limit]
+    return []
