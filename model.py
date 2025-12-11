@@ -16,7 +16,9 @@ def clean_data(data):
     df.columns = ["target", "id", "date", "flag", "user", "text"] 
 
 
-    ''' Cleaning the data. In the data set 0 is negative and 4 is positive, but It makes more 
+    ''' 
+    Cleaning the data. In the data set 0 is negative and 4 is positive,
+    but It makes more 
     sense to have 0 negative and 1 positive '''
     df["target"] = df["target"].replace({4: 1})
 
@@ -26,48 +28,62 @@ def clean_data(data):
     df["clean"] = df["clean"].str.replace(r"\s+", " ", regex=True).str.strip()
     return df
 
+
 def train_model(data_file):
     df = clean_data(data_file)
+
     # making an 80/20 split to create a model and then use on to test
     X_train, X_test, y_train, y_test = train_test_split( df["clean"], df["target"],test_size=0.2,)
 
     # creating model using TF-IDF vecotirzation
 
-    vecto = TfidfVectorizer(max_features=25000)
-    X_train_vec = vecto.fit_transform(X_train)
-    X_test_vec = vecto.transform(X_test)
+    vectorizer = TfidfVectorizer(max_features=25000)
+    X_train_vec = vectorizer.fit_transform(X_train)
+    X_test_vec = vectorizer.transform(X_test)
 
     # train  model 
 
     model = LogisticRegression(max_iter=100)
     model.fit(X_train_vec, y_train)
-    return model, X_test_vec, y_test
+    return model, vectorizer, X_test_vec, y_test
 
-def model_evaluation(model, X_test_vec, y_test):
+
+def model_evaluation(model, vectorizer, X_test_vec, y_test):
     # analyzing how good the model is
     y_pred = model.predict(X_test_vec)
     print(classification_report(y_test, y_pred))
     print(confusion_matrix(y_test, y_pred))
     
-    if model.score(X_test_vec, y_test) >= 0.75:
-        print("Model accuracy is acceptable, saving the model...")
-        with open('data\sentiment-model.pkl','wb') as f:
-            pickle.dump(model,f)
-    else:
-        print("Model accuracy is below acceptable threshold. Try changing model parameters or data preprocessing.")
+    '''Print model accuracy to see if its a good model, generally
+    if the model accuracy is above 0.75 it is good enough
+    For the model we trained accuracy is 0.80 which we said was satisfactory for this project
+    '''
+
+    print("Model accuracy is" ,model.score(X_test_vec, y_test))
+
+    '''
+    Save model, this model will be saved in the github so the user dosnt have to
+    download the large csv dataset
+     '''
+    with open('data/sentiment-model.pkl','wb') as f:
+        pickle.dump((model, vectorizer), f)
 
 
 def get_model():
-    model = None
-    try:
-        with open('data\sentiment-model.pkl','rb') as f:
-            print("Found existing model, loading it...")
-            model = pickle.load(f)
+    try: 
+        with open('data/sentiment-model.pkl','rb') as f:
+            model, vectorizer = pickle.load(f)
+            return model, vectorizer
+        
+
     except FileNotFoundError:
-        print("No existing model found, training a new model...")
-        model,X_test_vec,y_test = train_model(data_file)
-        model_evaluation(model, X_test_vec, y_test)
-    return model
+        
+        # In case of model not existing this will call above function to make the model
+
+        model, vectorizer, X_test_vec, y_test = train_model(data_file)
+        model_evaluation(model, vectorizer, X_test_vec, y_test)
+        return model, vectorizer
+
 
 if __name__ == "__main__":
     if get_model() is None:

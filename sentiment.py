@@ -1,10 +1,10 @@
 from model import get_model
 
+# Calls our model to predict sentiment text
 def predict_sentiment(text):
-    """
-    Predict the sentiment of the given text using the provided model.
-    """
-    sentiment_model = get_model()
-    prediction = sentiment_model.predict([text])
+    model, vectorizer = get_model()
+    X = vectorizer.transform([text])
 
-    return prediction[0]
+    # Returns predicted sentiment
+    # A value of 0 is negative, 1 is positive
+    return model.predict(X)[0]
