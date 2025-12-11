@@ -1,0 +1,6 @@
+.venv
+.vscode/*
+data/training.1600000.processed.noemoticon.csv
+processed_corpus/*
+indexes/*
+data/apnews/*

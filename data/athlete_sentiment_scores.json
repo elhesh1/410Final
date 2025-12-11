@@ -1,0 +1,14 @@
+[
+    {
+        "name":"Lebron James",
+        "score":0.8
+    },
+    {
+        "name":"Stephen Curry",
+        "score":0.3
+    },
+    {
+        "name":"Kevin Durant",
+        "score":0.6
+    }
+]
