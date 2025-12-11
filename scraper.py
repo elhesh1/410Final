@@ -13,14 +13,14 @@ def get_reddit_comments(name, limit=150):
     }
 
     # Trys twice, because sometimes the api times outs
-    for attempt in range(2):
+    for i in range(2):
         try:
+
             r = requests.get(url, params=params, timeout=30)
             data = r.json().get("data", [])
 
-            print(f"[SCRAPER] Retrieved {len(data)} comments for {name}")
             return [d.get("body", "") for d in data if d.get("body")]
         except Exception as e:
-            print(f"[SCRAPER] Attempt {attempt+1} failed:", e)
+            print(f"scraper failed: {i}  ", e)
 
     return []
